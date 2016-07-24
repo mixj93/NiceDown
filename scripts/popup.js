@@ -1,62 +1,35 @@
-// document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
 
-//   // check if its a .md page or file
-//   chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//     var url = tabs[0].url;
+  var disableNiceDown = false;
 
-//     if (url.split(".")[url.split(".").length - 1] === "md") {
-//       chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//         chrome.tabs.sendMessage(
-//           tabs[0].id, 
-//           {
-//             show: true
-//           }
-//         );
-//       });
-//     }
-//   });
+  chrome.runtime.onMessage.addListener(function(message, sender, sendResponse){
+    console.log("Message came.", message);
+    // 判断message类型
+    switch(message.type) {
+      case "CHECK_MARKDOWN":
+        if (message.markdownPage === false) {
+          $(".wrap").addClass("disable");
+        }
+    }
+  });
 
-//   // $("#searchBtn").click(function() {
-//   //   console.log("Click the search button.")
-//   //   var inputText = $("#filterInput").val();
-//   //   var showEmpty = $("#showEmpty:checked").length === 1 ? true : false;
+  $("#disableNiceDown").click(function(e) {
+    disableNiceDown = !disableNiceDown;
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(
+        tabs[0].id, 
+        {
+          "type": "DISABLE_NICEDOWN",
+          "disableNiceDown": disableNiceDown
+        }
+      );
+    });
+  });
 
-//   //   if (inputText.length <= 0) {
-//   //     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//   //       chrome.tabs.sendMessage(
-//   //         tabs[0].id, 
-//   //         {
-//   //           type: 'empty'
-//   //         }
-//   //       );
-//   //     });
-//   //   } else {
-//   //     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-//   //       chrome.tabs.sendMessage(
-//   //         tabs[0].id, 
-//   //         {
-//   //           type: 'assignee',
-//   //           name: inputText,
-//   //           showEmpty: showEmpty
-//   //         }
-//   //       );
-//   //     });
-//   //   }
-    
-//   // });
+  // $(document).keypress(function(e){
+  //   if (e.which == 13 && $("#filterInput:focus").length > 0){
+  //     $("#searchBtn").click();
+  //   }
+  // });
 
-//   // $("#emptyBtn").click(function() {
-//   //   console.log("Click the empty button.")
-//   //   $("#filterInput").val("");
-
-    
-    
-//   // });
-
-//   // $(document).keypress(function(e){
-//   //   if (e.which == 13 && $("#filterInput:focus").length > 0){
-//   //     $("#searchBtn").click();
-//   //   }
-//   // });
-
-// });
+});
